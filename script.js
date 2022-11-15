@@ -23,23 +23,96 @@ function getPlayersChoise() {
     return false;
 }
 
-function getResults(cpuChoice, playerChoice) {
-    console.log ('Computer choose ', cpuChoice);
-    console.log ('You choose ', playerChoice);
+function playRound(playerChoice) {
 
-    if (cpuChoice === playerChoice) return 'Draw';
+    const cpuChoice = getComputerChoice();
+    let outcome = 'Loose';
 
-    if (cpuChoice === 'Rock' && playerChoice === 'Scossors') return 'Loose';
-    if (cpuChoice === 'Rock' && playerChoice === 'Paper') return 'Win';
+    if (cpuChoice === playerChoice) { outcome = 'Draw';
+    }
 
-    if (cpuChoice === 'Paper' && playerChoice === 'Rock') return 'Loose';
-    if (cpuChoice === 'Paper' && playerChoice === 'Scissors') return 'Win';
+    else if (cpuChoice === 'Rock' && playerChoice === 'Paper') { 
+        playerWinCounter++;
+        outcome = 'Win';
+    }
 
-    if (cpuChoice === 'Scissors' && playerChoice === 'Paper') return 'Loose';
-    if (cpuChoice === 'Scissors' && playerChoice === 'Rock') return 'Win';
+    else if (cpuChoice === 'Paper' && playerChoice === 'Scissors') { 
+        playerWinCounter++;
+        outcome = 'Win';
+    }
+
+    else if (cpuChoice === 'Scissors' && playerChoice === 'Rock') { 
+        playerWinCounter++;
+        outcome = 'Win';
+    }
+
+    else { cpuWinCounter++; }
+
+    let score = {cpuChoice, playerChoice, outcome, cpuWinCounter, playerWinCounter};
+    showScore(score);
+
+    if (cpuWinCounter == 5 || playerWinCounter == 5) {
+        buttonDisable();
+    }
+
+    return score;
 
 }
 
-for (let i = 0; i < 5; i++) {
-    console.log(`It's a `, getResults(getComputerChoice(), getPlayersChoise()));
+function buttonDisable() {
+    const btns = document.querySelectorAll('button');
+    btns.forEach( (button) => {
+        button.disabled = true;
+    })
+    
+    console.log(btns);
 }
+
+function showScore(score) {
+    document.querySelector('#your-move').innerText = `You played ${score.playerChoice}`;
+    document.querySelector('#cpu-move').innerText = `CPU played ${score.cpuChoice}`;
+    document.querySelector('#score').innerText = `AND it's a ${score.outcome} | ${playerWinCounter} : ${cpuWinCounter}`;
+
+}
+
+function buttonCreate(name) {
+    const button = document.createElement('button');
+    button.textContent = name;
+    button.addEventListener('click', (e) => {
+        console.log(e.target.innerText);
+        console.log(playRound(e.target.innerText));
+    })
+    return button;
+}
+
+function game(){
+    const div = document.querySelector('#container');
+
+    div.appendChild(buttonCreate('Rock'));
+    div.appendChild(buttonCreate('Paper'));
+    div.appendChild(buttonCreate('Scissors'));
+
+    const recentMoves = document.createElement('div');
+
+    const yourMove = document.createElement('div');
+    yourMove.id = 'your-move';
+   
+    const cpuMove = document.createElement('div');
+    cpuMove.id = 'cpu-move';
+
+    const score = document.createElement('div');
+    score.id = 'score';
+
+
+    recentMoves.appendChild(yourMove);
+    recentMoves.appendChild(cpuMove);
+    recentMoves.appendChild(score);
+
+    div.appendChild(recentMoves);
+
+}
+
+
+let cpuWinCounter = 0;
+let playerWinCounter = 0;
+game();
